@@ -4,7 +4,8 @@
 
 ## Abstract
 
-Economic voting research assumes that voters focus their attention on the recent past. Yet testing this assumption is difficult and previous research remains inconclusive. To estimate voters' economic time frames, I specify a new model that relies on insights from the physical sciences. I show that voter myopia is real and that the economic vote is strongest when economic time frames are shortest. After around a year and a half, its effect falls by half. After five years, it becomes practically equivalent to zero. This suggests that voters are less short-sighted than some past research suggests. Still, there is some cause for concern: voters' economic time frames remain short enough that governments are likely to receive undeserved leeway for mistakes they make early in their tenure.
+To hold governments to account for the state of the economy, voters must first understand how it has changed. Yet the perceptions they report often show signs of clear partisan bias. At present, we do not know if this bias is real or instead a result of priming in political surveys. I test this here using an original survey experiment. I assign subjects at random to a political or non-political survey, record their economic perceptions, then compare the results for each group. I find that political surveys do worsen partisan bias, though only among incumbent supporters. As we would expect, they tend to be more positive in political surveys. Still, much partisan bias remains unexplained, even in the non-political condition. Thus, while these economic perception items are not perfect, we can at least be sure that most people respond to them in a similar way in different survey contexts.
+
 
 ## Notes
 
