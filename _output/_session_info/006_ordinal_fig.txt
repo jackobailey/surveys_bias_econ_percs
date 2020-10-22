@@ -1,0 +1,42 @@
+Analysis completed: 2020-10-22
+
+R version 4.0.3 (2020-10-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+
+locale:
+ [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C               LC_TIME=en_GB.UTF-8       
+ [4] LC_COLLATE=en_GB.UTF-8     LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+ [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+[10] LC_TELEPHONE=C             LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] here_0.1           ggpubr_0.4.0       jbmisc_1.1         tidybayes_2.1.1    forcats_0.5.0     
+ [6] stringr_1.4.0      dplyr_1.0.2        purrr_0.3.4        readr_1.3.1        tidyr_1.1.2       
+[11] tibble_3.0.4       ggplot2_3.3.2.9000 tidyverse_1.3.0   
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.5           lubridate_1.7.9      lattice_0.20-41      digest_0.6.26       
+ [5] rprojroot_1.3-2      assertthat_0.2.1     R6_2.4.1             cellranger_1.1.0    
+ [9] plyr_1.8.6           backports_1.1.10     reprex_0.3.0         coda_0.19-4         
+[13] httr_1.4.2           pillar_1.4.6         rlang_0.4.8          curl_4.3            
+[17] readxl_1.3.1         rstudioapi_0.11      data.table_1.13.0    car_3.0-9           
+[21] blob_1.2.1           labeling_0.4.2       foreign_0.8-79       munsell_0.5.0       
+[25] broom_0.7.0          compiler_4.0.3       modelr_0.1.8         pkgconfig_2.0.3     
+[29] tidyselect_1.1.0     gridExtra_2.3        arrayhelpers_1.1-0   rio_0.5.16          
+[33] fansi_0.4.1          crayon_1.3.4         dbplyr_1.4.4         withr_2.3.0         
+[37] ggdist_2.2.0         grid_4.0.3           distributional_0.2.0 jsonlite_1.7.1      
+[41] gtable_0.3.0         lifecycle_0.2.0      DBI_1.1.0            magrittr_1.5        
+[45] scales_1.1.1         zip_2.1.1            cli_2.1.0            stringi_1.5.3       
+[49] carData_3.0-4        farver_2.0.3         ggsignif_0.6.0       fs_1.5.0            
+[53] xml2_1.3.2           ellipsis_0.3.1       generics_0.0.2       vctrs_0.3.4         
+[57] cowplot_1.1.0        openxlsx_4.2.2       tools_4.0.3          svUnit_1.0.3        
+[61] glue_1.4.2           hms_0.5.3            abind_1.4-5          colorspace_1.4-1    
+[65] rstatix_0.6.0        rvest_0.3.6          haven_2.3.1         
