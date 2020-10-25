@@ -1,5 +1,5 @@
 # Political Surveys Bias Voters' Self-Reported Economic Perceptions
-# Script 8: Personal Economic Perceptions Figure
+# Script 9: Multinomial National Economic Perceptions Results Figure
 
 # Jack Bailey
 # University of Manchester
@@ -34,32 +34,31 @@ library(here)
 
 # Load model
 
-m2 <- readRDS(here("_output", "m2.rds"))
+m4 <- readRDS(here("_output", "m4.rds"))
 
 
 
 # 2. Triptych plot --------------------------------------------------------
 
 # We're going to create three plots that describe how the treatment affected
-# how those who voted for the incumbent Conservative Party reported their
-# national retrospective economic perceptions. We're also going to respect
+# the national retrospective economic perceptions that our subjects reported
+# based on who they voted for at the 2017 election. We're also going to respect
 # the ordinal nature of the data too. First, we'll create a plot that shows
-# how the responses of incumbents in the treatment group compared to those
-# in the control group.
+# how the responses of incumbents in the treatment group compared to those in
+# the control group.
 
-
-# Use m2 to predict 'e' where 'p' = 'Inc' and 't' = 'Treatment'
+# Use m4 to predict 'e' where 'p' = 'Inc' and 't' = 'Treatment'
 
 inc_t <- 
-  add_fitted_draws(m2,
+  add_fitted_draws(m4,
                    newdata = tibble(p = "Inc", t = "Treatment")) %>% 
   ungroup()
 
 
-# Use m2 to predict 'e' where 'p' = 'Inc' and 't' = 'Control'
+# Use m4 to predict 'e' where 'p' = 'Inc' and 't' = 'Control'
 
 inc_c <-
-  add_fitted_draws(m2,
+  add_fitted_draws(m4,
                    newdata = tibble(p = "Inc", t = "Control")) %>% 
   ungroup()
 
@@ -78,18 +77,18 @@ inc_cate <-
 # party at the 2017 General Election. These instructions are the same as
 # above, but substitute "Inc" for "Opp".
 
-# Use m2 to predict 'e' where 'p' = 'Opp' and 't' = 'Treatment'
+# Use m4 to predict 'e' where 'p' = 'Opp' and 't' = 'Treatment'
 
 opp_t <- 
-  add_fitted_draws(m2,
+  add_fitted_draws(m4,
                    newdata = tibble(p = "Opp", t = "Treatment")) %>% 
   ungroup()
 
 
-# Use m2 to predict 'e' where 'p' = 'Opp' and 't' = 'Control'
+# Use m4 to predict 'e' where 'p' = 'Opp' and 't' = 'Control'
 
 opp_c <-
-  add_fitted_draws(m2,
+  add_fitted_draws(m4,
                    newdata = tibble(p = "Opp", t = "Control")) %>% 
   ungroup()
 
@@ -108,18 +107,18 @@ opp_cate <-
 # General Election. These instructions are the same as above, but substitute
 # "Non" for "Opp".
 
-# Use m2 to predict 'e' where 'p' = 'Non' and 't' = 'Treatment'
+# Use m4 to predict 'e' where 'p' = 'Non' and 't' = 'Treatment'
 
 non_t <- 
-  add_fitted_draws(m2,
+  add_fitted_draws(m4,
                    newdata = tibble(p = "Non", t = "Treatment")) %>% 
   ungroup()
 
 
-# Use m2 to predict 'e' where 'p' = 'Non' and 't' = 'Control'
+# Use m4 to predict 'e' where 'p' = 'Non' and 't' = 'Control'
 
 non_c <-
-  add_fitted_draws(m2,
+  add_fitted_draws(m4,
                    newdata = tibble(p = "Non", t = "Control")) %>% 
   ungroup()
 
@@ -157,8 +156,10 @@ cates <-
                  "Little Worse",
                  "Stayed Same",
                  "Little Better",
-                 "Lot Better")
-      )
+                 "Lot Better",
+                 "Don't know")
+      ) %>% 
+      fct_relevel("Don't know", after = 0)
   )
 
 
@@ -167,7 +168,10 @@ cates <-
 cate_labs <-
   cates %>% 
   group_by(p, resp) %>% 
-  summarise(median = median(cate))
+  summarise(
+    median = median(cate),
+    .groups = "drop"
+  )
 
 
 # Now, we have the data for the plot and the labels too, so can begin to plot
@@ -175,12 +179,12 @@ cate_labs <-
 # just created, that we want it to plot each option in the 'p' variable in a
 # different facet, and that we want to add a dotted line at the zero mark.
 
-per_fig <- 
+multi_fig <- 
   cates %>% 
   ggplot(aes(x = cate, y = resp)) +
   facet_wrap(~ p) +
   geom_vline(xintercept = 0,
-             linetype = "dotted",
+             linetype = "12",
              colour = bailey_colours("grey6"),
              size = .5)
 
@@ -189,10 +193,9 @@ per_fig <-
 # too. At the same time, we'll also add in points that show the median value of
 # each distribution.
 
-
-per_fig <- 
-  per_fig +
-  stat_halfeyeh(aes(slab_fill = p,
+multi_fig <- 
+  multi_fig +
+  stat_halfeye(aes(slab_fill = p,
                     slab_colour = p),
                 .width = .95,
                 point_size = 1,
@@ -221,8 +224,8 @@ per_fig <-
 
 # Finally, we need to make the plot look nicer.
 
-per_fig <- 
-  per_fig +
+multi_fig <- 
+  multi_fig +
   scale_y_discrete(labels = function(x) str_wrap(x, width = 8)) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1, suffix = ""),
                      breaks = seq(-.15, .15, by = .05)) +
@@ -235,16 +238,16 @@ per_fig <-
   theme(axis.title.y = element_blank(),
         axis.ticks.x = element_line(lineend = "round"),
         axis.text.y = element_text(hjust = 0.5)) +
-  labs(title = "Political Surveys Do Not Bias Voters' Personal Economic Perceptions",
-       subtitle = "No matter how they voted for at the last election, respondents were no more likely to report biased perceptions\nof their own personal finances in either a political or non-political survey.",
+  labs(title = "Political Survey Bias is Robust to Model Specification and Missingness",
        x = "Conditional Average Treatment Effect (Percentage Points)")
+
 
 
 # 3. Replication details --------------------------------------------------
 
 # Save session information
 
-save_info(here("_output", "_session_info", "00_personal_fig.txt"))
+save_info(here("_output", "_session_info", "007_national_fig.txt"))
 
 
 # One last thing...

@@ -1,5 +1,5 @@
 # Political Surveys Bias Voters' Self-Reported Economic Perceptions
-# Script 7: National Economic Perceptions Figure
+# Script 6: Main National Economic Perceptions Results Figure
 
 # Jack Bailey
 # University of Manchester
@@ -41,11 +41,11 @@ m1 <- readRDS(here("_output", "m1.rds"))
 # 2. Triptych plot --------------------------------------------------------
 
 # We're going to create three plots that describe how the treatment affected
-# how those who voted for the incumbent Conservative Party reported their
-# national retrospective economic perceptions. We're also going to respect
+# the national retrospective economic perceptions that our subjects reported
+# based on who they voted for at the 2017 election. We're also going to respect
 # the ordinal nature of the data too. First, we'll create a plot that shows
-# how the responses of incumbents in the treatment group compared to those
-# in the control group.
+# how the responses of incumbents in the treatment group compared to those in
+# the control group.
 
 # Use m1 to predict 'e' where 'p' = 'Inc' and 't' = 'Treatment'
 
@@ -166,9 +166,10 @@ cates <-
 cate_labs <-
   cates %>% 
   group_by(p, resp) %>% 
-  summarise(median = median(cate),
-            lower = quantile(cate, probs = .025),
-            upper = quantile(cate, probs = .975))
+  summarise(
+    median = median(cate),
+    .groups = "drop"
+  )
 
 
 # Now, we have the data for the plot and the labels too, so can begin to plot
@@ -236,8 +237,8 @@ nat_fig <-
         axis.ticks.x = element_line(lineend = "round"),
         axis.text.y = element_text(hjust = 0.5)) +
   labs(title = "Political Surveys Bias Voters' National Economic Perceptions",
-       subtitle = "Where respondents voted for the incumbent at the last election, political surveys case them to report more\nbiased macro-economic perceptions than were they to take a non-political survey.",
        x = "Conditional Average Treatment Effect (Percentage Points)")
+
 
 
 # 3. Replication details --------------------------------------------------

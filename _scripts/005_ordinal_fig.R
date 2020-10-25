@@ -1,5 +1,5 @@
 # Political Surveys Bias Voters' Self-Reported Economic Perceptions
-# Script 6: Figure 1
+# Script 5: Ordinal Explainer Figure
 
 # Jack Bailey
 # University of Manchester

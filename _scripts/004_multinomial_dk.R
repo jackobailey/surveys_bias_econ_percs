@@ -1,5 +1,5 @@
 # Political Surveys Bias Voters' Self-Reported Economic Perceptions
-# Script 4: National Economic Perceptions (Multinomial)
+# Script 4: National Economic Perceptions (Multinomial, Don't Knows)
 
 # Jack Bailey
 # University of Manchester
@@ -98,8 +98,7 @@ dta <-
   mutate(
     e = 
       economy %>% 
-      as_factor(ordered = T) %>% 
-      mark_na("Don't know")
+      as_factor(ordered = T)
   )
 
 
@@ -163,7 +162,7 @@ check_hmc_diagnostics(m4$fit)
 
 # Save session information
 
-save_info(here("_output", "_session_info", "004_multinomial.txt"))
+save_info(here("_output", "_session_info", "005_multinomial_dk.txt"))
 
 
 # One last thing...
