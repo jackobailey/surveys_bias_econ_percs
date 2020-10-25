@@ -247,7 +247,7 @@ per_fig <-
 
 # Save session information
 
-save_info(here("_output", "_session_info", "00_personal_fig.txt"))
+save_info(here("_output", "_session_info", "007_personal_fig.txt"))
 
 
 # One last thing...
