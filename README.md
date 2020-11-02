@@ -1,6 +1,6 @@
 # Political Surveys Bias Voters' Self-Reported Economic Perceptions
 
-<!-- <center><img src="https://raw.githubusercontent.com/jackobailey/surveys_bias_econ_percs/main/_output/national_fig.png"></center> -->
+<center><img src="https://raw.githubusercontent.com/jackobailey/surveys_bias_econ_percs/main/_output/national_fig.png"></center>
 
 ## Abstract
 
