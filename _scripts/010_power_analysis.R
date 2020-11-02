@@ -192,9 +192,16 @@ sim_and_fit <-
            cores = 2,
            silent = T,
            refresh = 0) %>% 
-      tidy(prob = .95) %>%
-      rename(error = std.error) %>% 
-      filter(term %in% c("b_treat:inc"))
+      fixef() %>% 
+      as.data.frame() %>% 
+      rownames_to_column(var = "term") %>% 
+      rename(
+        est = Estimate,
+        error = Est.Error,
+        lower = `Q2.5`,
+        upper = `Q97.5`
+      ) %>% 
+      filter(term %in% c("treat:inc"))
   }
 
 
@@ -341,7 +348,6 @@ saveRDS(sim, here("_output", "all_sims.rds"))
 
 power_fig <- 
   sim %>%
-  filter(term == "b_treat:inc") %>% 
   mutate(effect = 
            effect %>% 
            factor(labels = 
@@ -356,7 +362,7 @@ power_fig <-
   ggplot(
     aes(
       x = index,
-      y = estimate,
+      y = est,
       ymin = lower,
       ymax = upper,
       colour = n,
@@ -387,7 +393,6 @@ power_fig <-
 
 power <- 
   sim %>% 
-  filter(term == "b_treat:inc") %>% 
   group_by(effect, n) %>% 
   mutate(check = ifelse(lower > 0, 1, 0)) %>% 
   summarise(power = mean(check)) %>% 
