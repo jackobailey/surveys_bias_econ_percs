@@ -163,6 +163,11 @@ cates <-
   )
 
 
+# Now we'll save the CATEs to disk so that we can include them in the paper.
+
+saveRDS(cates, here("_output", "cates_m4.rds"))
+
+
 # We'll also use these data to create summaries that we can use as labels
 
 cate_labs <-

@@ -1,0 +1,594 @@
+---
+title: |
+  | Political Surveys Bias Self-Reported
+  | Economic Perceptions
+author: |
+  | Jack Bailey
+  | \emph{The University of Manchester}
+abstract: |
+  | If voters are to hold governments to account for the state of the economy, they must know how it has changed. Indeed, this is a prerequisite for democratic accountability. Yet the perceptions that voters report often show signs of clear partisan bias. At present, we do not know if this bias is real or instead due to priming in political surveys. To test this, I assign subjects at random to either a political or non-political survey. I then record their economic perceptions and compare the results for each group. I show that political surveys do worsen partisan bias, though only among supporters of the incumbent party. Still, much partisan bias remains unexplained, even in the non-political condition. So, while economic perception items remain biased, we can at least be sure that most people respond to them in a similar way no matter the survey context.
+indent: yes
+fontsize: 12pt
+geometry: margin = 1.15in
+subparagraph: yes
+compact-title: false
+linkcolor: black
+urlcolor: violet
+citecolor: black
+bibliography: _assets/master.bib
+biblio-style: _assets/apsr.bst
+classoption: a4paper
+output: 
+  bookdown::pdf_document2: 
+    latex_engine: xelatex
+    toc: false
+    keep_tex: false
+    includes:
+      in_header:
+        - _assets/rmd-preamble.tex
+    number_sections: false
+    highlight: kate
+    fig_caption: true
+---
+<!-- Latex setup -->
+
+\doublespacing
+
+\thispagestyle{empty}
+\clearpage
+
+\pagebreak
+
+\setcounter{page}{1}
+
+```{r setup, include = F}
+
+# Load packages
+
+library(kableExtra)
+library(tidyverse)
+library(magrittr)
+library(jbmisc) # https://github.com/jackobailey/jbmisc
+library(brms)
+library(here)
+
+
+# Load fitted models
+
+m1 <- readRDS(here("_output", "m1.rds"))
+m2 <- readRDS(here("_output", "m2.rds"))
+m3 <- readRDS(here("_output", "m3.rds"))
+m4 <- readRDS(here("_output", "m4.rds"))
+
+
+# Load posterior treatment effects
+
+cates_m1 <- readRDS(here("_output", "cates_m1.rds"))
+cates_m2 <- readRDS(here("_output", "cates_m2.rds"))
+cates_m3 <- readRDS(here("_output", "cates_m3.rds"))
+cates_m4 <- readRDS(here("_output", "cates_m4.rds"))
+
+
+# Load figure scripts
+
+source(here("_scripts", "005_ordinal_fig.R"))
+source(here("_scripts", "006_national_fig.R"))
+source(here("_scripts", "007_personal_fig.R"))
+source(here("_scripts", "008_eu_fig.R"))
+source(here("_scripts", "009_multi_fig.R"))
+# source(here("_scripts", "010_power_analysis.R"))
+source(here("_scripts", "011_prior_figs.R"))
+
+
+# Tell knitr to use Cairo PDF when rendering plots so that it uses nice fonts
+
+knitr::opts_chunk$set(dev = "cairo_pdf")
+
+```
+
+
+# Introduction
+
+To hold governments to account for the state of the economy, voters must first know how it has changed. Indeed, this is an essential prerequisite for democratic accountability [@healy2013; @ashworth2012]. Thus, voters should notice that conditions improve when the economy grows and worsen when it shrinks. Just as this variation in perception is important, so too are its consequences. If voters are to reward and punish appropriately, then they should be more likely to support the incumbent where they also think that the economy has improved. This two-step process --- first, of economic updating; second, of electoral sanctioning --- is crucial for good governance. Rather than force voters to suffer fools, it lets them "kick the rascals out" if they fail to live up to expectations [@stegmaier2019].
+
+Though this idea has great normative appeal, reality often falls short. This is because voters are not so dispassionate when it comes to judging economic management. Instead, all manner of considerations influence the decisions they make. For instance, voters tend to rely on pre-existing beliefs when processing new information. Evidence of this behaviour is rife in political surveys, where respondents often report economic perceptions that show clear signs of partisan bias: those who support the incumbent tend to be more positive, and those who support the opposition more negative, than those who support no party at all [for recent evidence of this phenomenon, see @bailey2019; @bisgaard2019; @devries2018].
+
+Given the potential ramifications, much work now focuses on mitigating this bias. Yet we still do not know if it is meaningful or, instead, a result of partisan priming in political surveys. In test this possibility in this short research note. To do so, I use new survey experimental data from the 2019 UK General Election campaign.
+
+I find that political surveys worsen partisan bias in voters' self-reported economic perceptions. But this is true only for those who voted for the incumbent at the last election. What's more, much partisan bias remains unexplained. Thus, while economic perception items are far from perfect, survey researchers and economic voting scholars can at least be sure that most people respond to them in a similar way no matter the survey context.
+
+
+# Economic Perceptions, Partisan Bias, and Political Surveys
+
+Studies show that partisanship has a pervasive effect on self-reported economic perceptions [see, for example, @devries2018; @enns2012a; @bartels2002; @borre1997; @conover1987]. For example, in one study @parker-stephen2013 shows that greater clarity of responsibility also leads to greater partisan bias in voters' perceptions of the national economy. Likewise, @bailey2019 finds that partisans respond to economic signals at different rates, but nonetheless come to the same conclusion when the economy is at its worst.
+
+The chief concern that political scientists raise about this bias is that it undermines accountability mechanisms necessary to make democracy work [@healy2013; @anderson2007]. The reasoning is simple: if party identification motivates voters to paint their party in a positive light, then we cannot be sure that they will hold the party to account when it is in power. This, in effect, turns democracy into a simple numbers game. Thus, governments with a large enough pool of supporters could receive extra leeway that they did not deserve and that they otherwise would not have gotten.
+
+Partisan bias has serious empirical consequences too. Most notably, it suggests that economic voting models include independent (economic perceptions) and dependent variables (voting intention) that measure, in part, the same thing (party identification). A handful of studies now attempt to rid these models of the issue, most often using longitudinal data and sophisticated statistical methods. Whatever the case, they almost always come to the same conclusion: that economic voting effects show a marked decline after controlling for partisan bias [see, for example, @visconti2017; @pickup2013; @evans2010; @evans2006]. Still, some scholars remain skeptical of these findings and claim that the problem is either non-existent or unimportant [@fraile2014; @nadeau2013; @fraile2010; @lewis-beck2008; @lewis-beck2006]. As a consequence, we are now less certain about the economic vote than we have been for several decades.
+
+More often than not, economic voting scholars argue that motivated reasoning [@kunda1990] causes voters to report biased economic perceptions. This theory, borrowed from psychology, holds that individuals face two competing motivations when processing new information: accuracy and consistency. Accuracy motivations lead voters to engage in classic Bayesian reasoning: they arrive with some prior belief about the state of the economy, encounter new information, then incorporate it into their prior belief to arrive at a new posterior belief that reflects the two. Consistency motivations, instead, turn them into biased Bayesians. They still update their prior beliefs, but only after weighting any information based on how congruent it is with what they already believe [@huckfeldt2018; @hill2017].
+
+When it comes to matters of the economy, we might expect accuracy motivations to matter most; not only so that voters can hold their governments to account, but also so that they can make informed economic decisions in their day-to-day lives. Yet it is easy to see why consistency motivations might also play a powerful role in voters' economic calculus: the state of the economy has clear implications for wider perceptions of party competence [see, for example, @fieldhouse2020; @green2017]. This is especially important where voters are strong partisans, as striving to maintain cognitive consistency offers them a psychological "get out of jail free card". Rather than come to terms with any inconsistencies in how they view their party and how they view the economy, consistency motivations guide them towards an acceptable solution [@groenendyk2013]: that their party is doing a good job and, where the economy is doing badly, that the situation is someone else's fault [@bisgaard2019; @bisgaard2015; @tilley2011].
+
+Another, simpler, psychological explanation relies on voters using partisan cues to determine their own beliefs [@brady1985]. We have known for a long time that voters often lack knowledge of expertise when it comes to political and economic matters [@campbell1960]. This presents them with a problem when it comes to making political decisions. The literature on partisan cues and heuristics argues that voters seek to resolve this shortcoming by using what their preferred party says or does as a simple cognitive shortcut. This is due to either party loyalty or, instead, voters assuming that their party's position on any given matter is similar to the one that they would have arrived at themselves were they fully-informed [@ramirez2014; @brader2013a]. Evidence for this mechanism is most striking where it concerns elite cues. For instance, @bisgaard2018 shows that when the Danish government began to consider its budget deficit in a negative manner, so too did its supporters. Likewise, @pardos-prado2016 use Spanish data to show that voters' change their economic perceptions where their party makes the economy salient, at least where it "owns" the issue and is in opposition.
+
+Many assumptions are necessary to maintain that this bias arises due to psychological mechanisms like motivated reasoning and the use of partisan cues. But the most important is that we assume that voters say what they mean. That is to say, that the views that they report in survey match the views that they hold in real life. Doing so allows us to take the survey responses that they give as accurate proxies for what they really believe (and what we really care about). It also allows scholars to assume that any differences that exist in the data must also reflects differences that exist in real life [@bullock2019]. Of course, this need not be the case: almost all survey items suffer from one sort of bias or another, be it random or systematic. Thus, partisan bias may not really be a bias, but instead a downright lie.
+
+The idea that voters engage in "expressive responding" has gained recent interest. This theory contends that survey respondents use survey items to signal which party they support [@schaffner2018; @bullock2015]. For example, a respondent might report that the economy has gotten a lot better over the past 12 months, but only because they support the incumbent party and not because they really believe that to be the case. Recent survey experimental evidence shows that expressive responding almost certainly takes place. Though concerned with factual questions, @bullock2015 and @prior2015 run similar experiments where they manipulate respondents' incentive to engage in expressive responding. Those in the treatment groups received a small cash reward where they admitted either to not knowing the answer or gave the correct answer to a series of factual questions about the economy and other policy-related topics. Those in the control groups received no such reward. In both cases, the authors find partisan disagreement to be lower under the treatment than the control implying that their responses are not sincere [though see @berinsky2017].
+
+Item-order effects offer another plausible yet non-psychological explanation for partisan bias in the economic perceptions that voters report. Item-order effects occur where the order in which survey items occur affects the responses that survey respondents give to them. For example, @sears1983 argue that placing a non-political item before a political one can *personalize* how respondents answer political questions, while placing a political item before a non-political one can *politicize* how they answer non-political ones. As many electoral surveys begin by asking respondents how they intend to vote, politicization is probably relatively common. Further, evidence shows that these effects can be substantial. @wilcox1993, for instance, show that economic perception items exhibit deep item-order effects that persist even where there are several buffer questions separating them from voting intention and party identification questions.
+
+While motivated reasoning, partisan cues, expressive responding, and item-order effects are each distinct, they likely share a common catalyst: the political nature of electoral surveys. While these effects are all possible in non-political surveys, we might still expect party-political priming to aggravate their effects. For example, survey respondents would face much weaker incentives to engage in expressive responding were it not clear that anyone would notice their cheer-leading. The same is also true for motivated reasoning and partisan cue-taking: respondents are less likely to encounter psychological discomfort or to resort to partisan cues where they are not first led to consider the economy through the lens of their party identification.
+
+Thus, we might reasonably assume that the survey context *itself* exerts a moderating effect on how partisanship affects the economic perceptions that voters report. These effects are now well-known: incumbent supporters are more positive and opposition supporters more negative [@devries2018; @bartels2002; @conover1987]. To this end, I argue that we should expect party identification to have a stronger influence in political compared to non-political surveys. Further, these effects should also vary by party identification. That is, incumbent supporters should be *more* likely to report positive and *less* likely to report negative economic perceptions in political compared to non-political surveys. Likewise, opposition supporters should, instead, be *less* likely to report positive and *more* likely to report negative economic perceptions. This implies the two following hypotheses:
+
+\vspace{.5cm}
+\setlength\parindent{0em}
+
+\textsf{\textbf{Hypothesis 1:}} Political surveys cause incumbent-supporting respondents to report more *positive* economic perceptions than they would do in a non-political survey.
+
+
+\vspace{.5cm}
+
+\textsf{\textbf{Hypothesis 2:}} Political surveys cause opposition-supporting respondents to report more *negative* economic perceptions than they would do in a non-political survey.
+
+\vspace{.5cm}
+\setlength\parindent{2em}
+
+
+# Experimental Design
+
+I test my hypotheses using a simple survey experiment administered by YouGov to a sample of eligible British voters between the 6\textsuperscript{th} and the 8\textsuperscript{th} November 2019. The British case is especially useful and provides a strong test of my argument for two reasons. First, the data collection process coincided with the start of the 2019 UK General Election campaign. This implies that my subjects were exposed to a general politicization of the information environment. As a result, we might expect participants to bias their responses in *non-political* surveys too. Thus, any differences between my treatment group and my control group will likely be conservative.
+
+Second, data collection occurred at a time of economic uncertainty. Though the economy was not in recession, it was not growing much either. The most recent GDP data at the time showed that the UK economy had contracted by $0.2\%$ in the previous quarter [@ons2019a]. This is important as new evidence shows that even strong partisans "get it" when the going gets tough [@bisgaard2019; @devries2018] and that this leads partisan bias to diminish [@bailey2019; @stanig2013]. As such, the economic circumstances might provide less partisan bias for my treatment to manipulate. Again, this suggests that my treatment effects will be conservative.
+
+In the first stage of my experiment, I drew a blocked sample of British voters from YouGov's online panel of survey respondents. The first block contained only those voters who had voted for the incumbent Conservative Party at the previous election in 2017, the second only those who had voted for an opposition party, and the third only those who had not voted at all^[Overall, the retention rate was high. Only $3.5\%$ of respondents who started the survey failed to finish it. Of those, $52\%$ $(48)$ left before being assigned to a treatment, $20\%$ $(18)$ left after being assigned to the political treatment, and $27\%$ $(25)$ left after being assigned to the non-political control.]. To determine an appropriate sample size for my experiment, I conducted a simulation-based power analysis, which showed that I would need a sample of around $2,500$ respondents in order to reach a power level of $80\%$^[A simulation-based approach is essential in this case for two reasons. First, I estimate my treatment effects using ordered regression and, unlike when using ordinary least squares, no convenient solution exists when it comes to conducting power analysis for these models. Second, I also estimate how my treatment interacts with other variables. This often requires larger samples than normal effects to reach the same level of power. For more information, see appendix A.].
+
+Rather than having participants report their voting behavior during the experiment itself, I instead rely on contemporaneous data that YouGov collected in the days after the 2017 election. As such, misreporting bias or other related issues should be low. Some might argue that it would be better to use participants' *current* party identification instead of how they voted in the past. After all, attitudes and choices change over time. While this is a reasonable objection, like current voting intention, it is not possible to include such an item without also undermining the experiment as it would render the non-political case political. Further, using past voting behavior has one particular advantage over current party identification: voters cannot undo it. This may explain why it appears to exert such a considerable effect on the economic perceptions that voters report [@anderson2004].
+
+In the second stage, I exploited YouGov's day-to-day operations to administer my treatment. As a large commercial polling company, YouGov runs many simultaneous political and non-political surveys at any given point in time. It also often runs them in tandem. As a result, panel members are used to surveys that concern one topic before switching to another. My treatment group first completed a version of YouGov's on-going voting intention poll. This included five questions that concerned voting behavior and the perception of party leaders. The control group, instead, completed a survey on dental hygiene. This has an almost identical structure to the political survey. For example, it asked the same number and type of questions, and included the same number of response options in all cases. Further, it used only questions that YouGov had fielded in the past to ensure that it was believable^[A full questionnaire containing the questions fielded to both the treatment and control groups is available in appendix B.]. In all cases, participants had an equal chance of being assigned to the treatment or to the control.
+
+In the third stage, I measured my subjects' perceptions of the economy and their own personal finances. After completing their political or non-political survey, both groups saw the topic switch from politics/dental hygiene to the economy and were asked to report their own retrospective perceptions. As I used a sample of British voters, I followed the lead of the British Election Study [@fieldhouse2020a] and asked the following questions:
+
+- Now, a few questions about economic conditions. How does the *financial situation of your household* now compare with what it was 12 months ago?
+
+- How do you think the *general economic situation in this country* has changed over the *last 12 months*?
+
+\setlength\parindent{0em}
+
+These items have their origins in consumer confidence surveys [@katona1951], entered political science via *The American Voter* [@campbell1960], and are now ubiquitous in economic voting research [@lewis-beck2007]. By and large, the literature on economic perceptions and partisan bias focuses only on national-level items [see, for example, @anson2017; @hansford2015; @fraile2014; @stevenson2013; @pickup2013; @enns2012a; @evans2010; @lewis-beck2008; @evans2006]. While I do include this item, I also asked my subjects to report their personal perceptions too. This was useful both to provide a benchmark for any national-level effects and to help to prevent an unusual one-question-long topic. 
+
+\setlength\parindent{2em}
+
+In both cases, my subjects faced the exact same response options. They could answer each question on a five-point Likert-type scale that ranged from *"1 -- Got a lot worse"* to *"5 -- Got a lot better"*. They could also report that they did not know how either the national or their own personal economic situation compared to what it was 12 months ago. Where this was the case, I removed these cases using list-wise deletion.
+
+
+# Estimating Response-Specific Treatment Effects
+
+Measuring economic perceptions on five-point scales produces ordinal data. Yet most scholars instead treat them as continuous [for recent examples, see @bisgaard2019; @devries2018; @simonovits2015]. This is convenient, as it lets one estimate treatment effects using only a simple comparison of means. But this simplicity belies considerable drawbacks, including false positives, false negatives, and even estimates with incorrect signs [@liddell2018].
+
+One argument in favor of treating ordinal variable as continuous is that although the outcome variable itself is ordinal, the subgroup means and their differences are continuous. This is true. But it is not clear what treatment effects computed in this way even mean. Indeed, where an ordinal variable has three or more response options, there are an *infinite* combination of response distributions that might produce any given difference in means. Thus, while a difference in means might summarize the treatment effect, it tells us little about how the treatment affects the choices respondents really make.
+
+One might expect ordered regression to provide a sensible alternative. Unfortunately, these models face similar problems. To understand why, see figure 1. Ordered regression works by treating the ordered distribution we observe (bottom row) as a function of a continuous distribution we do not (top row). The model then uses a set of threshold parameters (here shown as gray dotted lines) to translate between the former and the latter. These divide the continuous latent distribution into as many segments as there are response options. The area under the curve between any two adjacent thresholds then gives the probability that each response will occur.
+
+The first column shows the baseline case. Here, each response has an equal probability of selection. To adjust this, we can either change the mean or change the variance of the latent distribution. These changes have three consequences. When we change the mean, the latent distribution *shifts* up or down the scale (second column). This alters the area between the thresholds and moves the ordinal distribution in the same direction. If we instead adjust the variance, the latent distribution either *compresses* at a specific point, compressing the ordinal distribution's probability mass (third column), or *disperses* across many points, piling up probability mass at the extremes (fourth panel).
+
+<!-- ![Ordered regression assumes that the observed ordinal scale is a function of a latent continuous one. Imagine that each column shows a different treatment group and that the baseline group is the control. Here, participants have an equal probability of selecting each response. When the the latent scale *shifts* (column 2), so too does the probability of selecting a higher value on the observed scale. Likewise, when the latent scale *compresses* (column 3) or *disperses* (column 4), the observed scale follows suit. As the figure shows, each can have a large effect. Even so, most ordered regression models account only for shift.](_assets/figure_1.pdf) -->
+
+As figure 1 shows, compression and dispersion can have considerable effects on the ordinal distribution we observe. Yet, conventional ordered regression models as implemented in the `ologit` command in Stata and the `polr` function in `R` account only for shift. This is a problem, as treatment effects may have large effects on extreme responses, yet not shift the probability mass to one end or the other. Overcoming this is difficult using Frequentist methods. As such, recent work recommends a Bayesian approach instead [@burkner2019; @liddell2018]. Given this, I estimate my treatment effects using the following Bayesian ordered probit model^[Note: Bayesian models require prior distributions and, in this case, I use a set of non-informative priors that I discuss in greater detail in appendix C.].
+
+Let $E_{i}$ be person $i$'s reported economic perceptions. Economic voting research often measures these items on a five-point scale where $1 =$ "Got a lot worse" and $5 =$ "Got a lot better". In fitting the ordered regression, we assume that the ordered variable, $E_{i}$, is a function of a latent variable, $E_{i}^{*}$, where:
+
+\begin{equation*}
+E_{i}^{*} \sim \text{Normal}(\mu_{i}, \sigma_{i})
+\end{equation*}
+
+And that $E_{i}$ takes a particular value as follows:
+
+\begin{equation*}
+E_{i} = k \text{ if } \tau_{k-1} \leq E_{i}^{*} \leq \tau_{k} \text{ for } k = 1, ..., K
+\end{equation*}
+
+Here, $\tau_{k}$ for $k = 0, ..., K$ represent threshold parameters which segment the latent continuous distribution. We fix the $0^{th}$ and $k^{th}$ thresholds equal to $- \infty$ and $+ \infty$, such that $- \infty = \tau_{0} < \tau_{1} < ... < \tau_{k-1} < \tau_{k} = \infty$. As such, the probability that $E_{i} = k$ is:
+
+\begin{equation*}
+\text{Pr}(E_{i} = k) = \Phi(\frac{\tau_{k} - \mu_{i}}{\sigma_{i}}) - \Phi(\frac{\tau_{k-1} - \mu_{i}}{\sigma_{i}})
+\end{equation*}
+
+Where $\Phi$ is the cumulative distribution function of the normal distribution with mean $\mu_{i}$ and standard deviation $\sigma_{i}$. As I discuss above, both influence the ordinal distribution that we observe. Likewise, both may also vary according either to party preference or treatment status. To allow for this, I fit a linear model to each parameter:
+
+\begin{align*}
+\mu_{i} &= \beta_{1} T_{i} + \beta_{2} I_{i} + \beta_{3} O_{i} + \beta_{4} (T_{i} \times I_{i}) + \beta_{5} (T_{i} \times O_{i}) \\
+log(\sfrac{1}{\sigma_{i}}) &= \delta_{1} T_{i} + \delta_{2} I_{i} + \delta_{3} O_{i} + \delta_{4} (T_{i} \times I_{i}) + \delta_{5} (T_{i} \times O_{i})
+\end{align*}
+
+Here, $T_{i}$ takes the value $1$ where person $i$ is in the treatment group. Likewise, $I_{i}$ and $O_{I}$ take the value $1$ where person $i$ voted for the incumbent or an opposition party at the last election, respectively. Rather than model $\sigma_{i}$, I instead model $log(\sfrac{1}{\sigma_{i}})$. This is akin to the discrimination parameter in a graded response model [@deayala2009]. To identify the model, I fix $\sigma_{I}$ to $1$ for the baseline category (non-voters).
+
+Though somewhat complex, this method is robust to the problems I discuss above. Still, like any ordered regression model, it produces parameters that are hard to interpret. Fortunately, as Bayesian models are generative [@lambert2018] we can have them estimate treatment effects on the more intuitive probability scale while also incorporating any inherent uncertainty. I do this below, and compute my treatment effects for each response category as follows:
+
+\begin{equation*}
+\text{ATE}_{k} = \text{Pr}(E_{i} = k | T_{i} = 1) - \text{Pr}(E_{i} = k \mid T_{i} = 0)
+\end{equation*}
+
+\setlength\parindent{0em}
+
+I take this approach below and save any regression tables for the appendix^[Regression tables for all models in this paper are available in appendix E].
+
+\setlength\parindent{2em}
+
+
+# Results
+
+<!-- ![Political surveys cause incumbent voters to report different economic perceptions (left panel). To this end, they were less likely to say that the economy had either "got a little worse" or "got a lot worse". They were also more likely to say that the economy had "stayed the same" or that it had "got a little better". Note that the treatment had little effect on reporting that the economy had "got a lot better" for any group and also that these estimates were very precise. This is because almost no one said that the economy had "got a lot better" in either group. Here, density plots show the posterior distribution of conditional average treatment effects. Further, black bars show their 95% credible interval and point estimates their median.](_assets/figure_2.pdf) -->
+
+The question remains: do political surveys affect the type of economic perceptions that survey respondents report? My results show that they do. Yet, treatment effects are limited only to those who voted for the incumbent Conservative Party at the last election^[This finding is robust to a range of tests. See appendix D.]. Figure 2 shows these estimates in graphical form. Here, density plots show the posterior distribution of each treatment effect, black bars their $95\%$ credible intervals, and point estimates their median. Each reflects the difference in the probability of reporting a given response under the treatment and the control. Thus, a positive value implies that the treatment increased the probability of a respondent picking a given response by a given number of percentage points.
+
+The left-most panel shows how the treatment affected those who voted for the incumbent party in 2017. In general, these effects are in line with my expectation that incumbent-supporting subjects would be more positive in the political survey. In the treatment group, these respondents were `r (cates_m1$cate[cates_m1$p == "Incumbent" & cates_m1$resp == "Lot Worse"] * 100) %>% in_text(text = "percentage points", inside = F)` less likely to say that the economy "got a lot worse" over the past twelve months and `r (cates_m1$cate[cates_m1$p == "Incumbent" & cates_m1$resp == "Little Worse"] * 100) %>% in_text(text = "percentage points", inside = F)` less likely to say that it "got a little worse". In comparison, they were `r (cates_m1$cate[cates_m1$p == "Incumbent" & cates_m1$resp == "Little Better"] * 100) %>% in_text(text = "percentage points", inside = F)` *more* likely to say that the economy "got a little better".
+
+Interestingly, these subjects were no more likely to say that the economy "got a lot better" `r (cates_m1$cate[cates_m1$p == "Incumbent" & cates_m1$resp == "Lot Better"] * 100) %>% in_text(inside = T)`. This effect was also much more precise than for other responses. Though this may seem unusual, it arises only because almost no one reported that the economy "got a lot better". This is not uncommon, at least in the British case, even when the economy is booming [see @bailey2019]. Finally, those reporting that the economy "stayed the same" made up the difference. These participants were `r (cates_m1$cate[cates_m1$p == "Incumbent" & cates_m1$resp == "Stayed Same"] * 100) %>% in_text(text = "percentage points", inside = F)` more likely to pick this option under the treatment compared to the control.
+
+Contrary to my expectations, the effect of taking a political survey was less clear where participants voted for an opposition party at the last election. These subjects were not much more likely to say that the economy "got a lot better" `r (cates_m1$cate[cates_m1$p == "Opposition" & cates_m1$resp == "Lot Better"] * 100) %>% in_text()`, "got a little better" `r (cates_m1$cate[cates_m1$p == "Opposition" & cates_m1$resp == "Little Better"] * 100) %>% in_text(inside = T)`, or "stayed the same" `r (cates_m1$cate[cates_m1$p == "Opposition" & cates_m1$resp == "Stayed Same"] * 100) %>% in_text()` where they took the political survey treatment. And, while they were `r (cates_m1$cate[cates_m1$p == "Opposition" & cates_m1$resp == "Lot Worse"] * 100) %>% in_text(text = "percentage points", inside = F)` more likely to say that the economy "got a lot worse", they were in fact `r (cates_m1$cate[cates_m1$p == "Opposition" & cates_m1$resp == "Little Worse"] * 100) %>% in_text(text = "percentage points", inside = F)` *less* likely to say that it "got a little worse". Evidence of any treatment effects here was only very weak. In both cases, the range of plausible values was large and included many values practically-equivalent to zero. Interestingly, non-voters showed a similar pattern of treatment effects to opposition voters, though were even more muted. This is perhaps unsurprising, given that the participants who comprised this group presumably had little sense of party identification.
+
+
+# Political Surveys and Partisan Bias
+
+<!-- ![Assuming that the estimates I present here represent upper-bounds, political surveys account for around one-quarter of all partisan bias in the economic perceptions that voters report in fifteen recent waves of the British Election Study Internet Panel (BESIP). In reality, these estimates are likely conservative. As such, the true amount of partisan bias that political surveys account for may be larger outside of election periods. Note that density plots here show the posterior distribution of the proportion of partisan bias attributable to the political survey context. Further, black bars show their 95% credible interval and point estimates their median.](_assets/figure_6.pdf) -->
+
+One question remains unanswered: what proportion of all partisan bias do political surveys account for? With only a single experiment to draw upon, this is difficult to know. Nevertheless, we can approximate this proportion by assuming that my treatment effects represent upper-bounds on the true effect. As I discuss above, my estimates are likely to be conservative. This means that treating them as an *upper-* and not *lower-*bounds is also conservative as the true value may be somewhat larger.
+
+Computing the proportion *within* the experimental context is relatively simple. One need only divide the treatment's main effect and its interaction with partisanship by the main effect, its interaction, and the main effect of partisanship. In the present case, this calculation suggests that around $30\%$ ($95\%$ CI $= 11\%$ to $48\%$) of the partisan bias present incumbent supporters self-reported economic perceptions is due to the political survey context.
+
+While informative, this estimate is limited only to a single case. It would be better to compute a *distribution* of proportions using data from many points in time. The British Election Study Internet Panel, 2014--2023 [@fieldhouse2020a], provides one such source of data. The BESIP includes the national economic perceptions item in fifteen separate waves. These cover the period between April 2014 and November 2019. I fit a similar ordered regression model to each wave of the data then, as the data do not vary the survey context, use the treatment effect from my survey experiment to approximate the proportion of partisan bias due to the political survey context under the assumption that it remains constant.
+
+Figure 3 shows the resulting estimates. For incumbent supporters, these range from a low of $20\%$ in wave 6 to a high of $32\%$ in waves 10, 12, 13, and 15. The average across all waves is $27\%$ ($95\%$ CI $= 9\%$ to $47\%$), suggesting that around one-quarter of all partisan bias in the economic perceptions that incumbent partisans report is due to political survey effects. The equivalent effects for opposition supporters are much weaker and much more uncertain. As a result, it seems that most partisan bias --- at least under the conservative assumption --- *is not* due to political survey effects.
+
+
+# Discussion and Conclusion
+
+Where political science is based on survey research, it proceeds as though voters say what they mean. As a result, it often holds that the difference between the perceptions of different groups *within the survey* necessarily reflect real and existing differences between these groups *outside of the survey* [@bullock2019]. My results show that this is not always true. At least some of the difference in the economic perceptions that partisans report is due not to any underlying psychological differences, but instead to the survey context itself. To this end, incumbent supporters are more likely to report positive perceptions of the national economy in a political survey compared to a non-political equivalent.
+
+It is worth trying to understand why incumbent voters might feel the need to bias their responses. One potential explanation is that partisans face different incentives when the economy is middling or poor, as it was in this case. When the economy is bad, the response that opposition supporters would give if they were to tell the truth or to bias their responses is the same: that things are worse. As a result, they report economic perceptions that suffer from little partisan bias. The opposite is true for incumbent supports. Instead, the response that they would give if they were to tell the truth is different to the one they would give if they were to engage in partisan bias. Thus, we might expect them to be more willing to engage in motivated reasoning or expressive responding, leaving at least some partisan bias for the political survey context to manipulate.
+
+As it seems political surveys *do* worsen partisan bias in self-reported economic perceptions, the most pressing issue is to determine how this affects economic voting research. In this respect, the outcome is mixed. On the one hand, having voters report their economic perceptions in political surveys almost certainly worsens the endogeneity problem endemic to most economic voting research [@visconti2017; @dickerson2016; @chzhen2014; @pickup2013; @evans2010; @evans2006]. On the other, this bias seems to be isolated only to a particular group of voters (incumbent supporters), implying that much of the partisan bias that remains after taking political survey effects into account is either sincere or constant across both contexts.
+
+While the treatment effects I present are only relatively small at the *individual*-level (with the largest being $5.3$pp), their consequences are most serious for *aggregate*-level research. Though this often uses economic indicators instead of aggregate economic perceptions, this is not always the case [see, for instance, @lewis-beck2013b], especially in the popular press [@theeconomist2019] and civil society [@pewresearchcenter2020]. This research most often uses either the proportion of respondents who think that the economy is improving or net economic perceptions. Where these are split by partisanship [see, for example, @enns2012a] raw approval figures may over-estimate how much incumbent supporters approve of the economy. Net effects, however, are likely much worse as they over-estimate how positive incumbent supporters are *and* under-estimate how negative they are. For example, the results that I present in figure 2 would suggest a difference in net economic perceptions of almost 12 percentage points between the political and non-political survey.
+
+Whether the biasing effect of political surveys is constant or varies according to different factors remains to be discovered. Still, that we can manipulate the way we measure voters' economic perceptions and arrive at different results suggests a fruitful avenue for future research: to understand how voters experience the economy, we might opt not to adjust our *models*, but instead to adjust our *designs*. Research in this vein has already begun [@visconti2017]. Further, it offers students of the economic vote not only a better understanding of how the economy affects voters' behavior, but also a better understanding of how voters arrive at and update their economic perceptions. Ultimately, we may finally come to know whether or not voters are telling us the truth after all.
+
+\pagebreak
+
+
+# References
+
+<div id="refs"></div>
+
+
+\pagebreak
+
+\setcounter{table}{0}
+
+<!-- \renewcommand{\thetable}{A\arabic{table}} -->
+
+\setcounter{figure}{0}
+
+<!-- \renewcommand{\thefigure}{A\arabic{figure}} -->
+
+
+# Appendix A: Power Analysis
+
+<!-- ![Outcomes from 6,000 simulation-based power analyses, ordered by lower 95% credible interval. In scenario 1, I assume that political survey effects account for the total effect I find in the observational data. In scenario 2, I assume instead that political survey effects account for half of this effect. All samples achieve 80% in scenario 1. Only a sample of 2,500 achieved 80% power in scenario 2.](_assets/figure_a1.pdf) -->
+
+Before fielding my experiment, it was essential that I determine an appropriate sample size. To do so, I conducted a simulation-based power analysis. This approach was necessary as my dependent variable was ordinal. Unlike continuous data, it is not possible to conduct power analyses for ordinal data by hand. It was important that the effect sizes I used in my power analysis be of a realistic and reasonable size. To do so, I fit a similar ordered-probit model to the one I discussed above to data from wave 16 of the British Election Study Internet Panel [@fieldhouse2020a]. I then used the regression parameters to establish informative prior expectations for what effect sizes I might expect.
+
+The BESIP data are observational. As such, the resulting estimates tell us only the net effect that respondents' past voting behavior and the political survey context have on the economic perceptions that they report. We do not, however, know what proportion of these effects each accounts for. I proposed two hypothetical scenarios as the basis of my power analysis. In the first, I assumed that political survey effects accounted for the total effect I observed in the observational data. In the second scenario, I instead assumed that they accounted for only half of it. I then simulated 1,000 experiments for each across three sample sizes ($n= 1,500$, $n= 2,000$, and $n= 2,500$). These matched the blocked structure of my experiment. To make sure that my results did not depend on the random seed I used to simulate my data, I incremented it by one for each simulation. This gave $6,000$ simulated experiments in total. In simulating my data, I focused on the treatment's effect on incumbent partisans. Further, I set my desired level of power at $80\%$. As I expect this effect to be positive, this implies that $80\%$ of the effects from my simulation should have a lower $95\%$ credible interval exceeds zero.
+
+Figure A1 shows the outcomes of all $6,000$ simulated experiments, ordered by their lower $95\%$ credible interval. For scenario 1, all sample sizes achieved the desired level of power. Indeed, every simulated experiment yielded estimates that were greater than zero matter the sample size. This was not the case for scenario 2. Instead, every sample size included at least some simulations with lower $95\%$ credible intervals that did not exceed zero. Here, a sample size of $1,500$ corresponded with a power level of $60\%$; $2,000$ with a power level of $74\%$; and $2,500$ with a power level of $84\%$. Thus, I opted for a sample of $2,500$ respondents so as to exceed the $80\%$ power.
+
+\pagebreak
+
+
+# Appendix B: Questionnaire
+
+\setlength\parindent{0em}
+
+<!-- Column headers -->
+\begin{minipage}[t]{0.4\linewidth}
+\center{\sffamily{\textbf{Treatment}}}\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\linewidth}
+\center{\sffamily{\textbf{Control}}}\\
+\end{minipage}
+
+<!-- Question 1 -->
+\begin{minipage}[t]{0.4\linewidth}
+\sffamily \textbf{Q1.} \rmfamily If there were a general election held tomorrow, which party would you vote for?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Conservative}\\
+\sffamily \textbf{2.} \rmfamily \emph{Labour}\\
+\sffamily \textbf{3.} \rmfamily \emph{Liberal Democrat}\\
+\sffamily \textbf{4.} \rmfamily \emph{Scottish National Party (SNP)}\\
+\sffamily \textbf{5.} \rmfamily \emph{Plaid Cymru}\\
+\sffamily \textbf{6.} \rmfamily \emph{Brexit Party}\\
+\sffamily \textbf{7.} \rmfamily \emph{Green}\\
+\sffamily \textbf{8.} \rmfamily \emph{Some other party}\\
+\sffamily \textbf{9.} \rmfamily \emph{Would not vote}\\
+\sffamily \textbf{10.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\linewidth}
+\sffamily \textbf{Q1.} \rmfamily Imagine that you need to buy toothpaste in the near future, which brand would you choose?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Colgate}\\
+\sffamily \textbf{2.} \rmfamily \emph{Sensodyne}\\
+\sffamily \textbf{3.} \rmfamily \emph{Aquafresh}\\
+\sffamily \textbf{4.} \rmfamily \emph{Oral-B}\\
+\sffamily \textbf{5.} \rmfamily \emph{Macleans}\\
+\sffamily \textbf{6.} \rmfamily \emph{Arm \& Hammer}\\
+\sffamily \textbf{7.} \rmfamily \emph{Crest}\\
+\sffamily \textbf{8.} \rmfamily \emph{Some other brand}\\
+\sffamily \textbf{9.} \rmfamily \emph{I would not buy toothpaste}\\
+\sffamily \textbf{10.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+
+
+<!-- Question 2 -->
+\begin{minipage}[t]{0.4\linewidth}
+\sffamily \textbf{Q2.} \rmfamily On a scale of 0 (certain NOT to vote) to 10 (absolutely certain to vote), how likely would you be to vote in a general election tomorrow?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{0 -- Certain NOT to vote}\\
+\sffamily \textbf{2.} \rmfamily \emph{1}\\
+\sffamily \textbf{3.} \rmfamily \emph{2}\\
+\sffamily \textbf{4.} \rmfamily \emph{3}\\
+\sffamily \textbf{5.} \rmfamily \emph{4}\\
+\sffamily \textbf{6.} \rmfamily \emph{5}\\
+\sffamily \textbf{7.} \rmfamily \emph{6}\\
+\sffamily \textbf{8.} \rmfamily \emph{7}\\
+\sffamily \textbf{9.} \rmfamily \emph{8}\\
+\sffamily \textbf{10.} \rmfamily \emph{9}\\
+\sffamily \textbf{11.} \rmfamily \emph{10 -- Absolutely certain to vote}\\
+\sffamily \textbf{12.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\linewidth}
+\sffamily \textbf{Q2.} \rmfamily On a scale of 0 (not at all important) to 10 (very important), how important do you think dental hygiene is in everyday life?\\
+\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{0 -- Not at all important}\\
+\sffamily \textbf{2.} \rmfamily \emph{1}\\
+\sffamily \textbf{3.} \rmfamily \emph{2}\\
+\sffamily \textbf{4.} \rmfamily \emph{3}\\
+\sffamily \textbf{5.} \rmfamily \emph{4}\\
+\sffamily \textbf{6.} \rmfamily \emph{5}\\
+\sffamily \textbf{7.} \rmfamily \emph{6}\\
+\sffamily \textbf{8.} \rmfamily \emph{7}\\
+\sffamily \textbf{9.} \rmfamily \emph{8}\\
+\sffamily \textbf{10.} \rmfamily \emph{9}\\
+\sffamily \textbf{10.} \rmfamily \emph{10 -- Very important}\\
+\sffamily \textbf{11.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+
+
+<!-- Question 3 -->
+\begin{minipage}[t]{0.4\linewidth}
+\sffamily \textbf{Q3.} \rmfamily Who do you think would make the best Prime Minister?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Boris Johnson}\\
+\sffamily \textbf{2.} \rmfamily \emph{Jeremy Corbyn}\\
+\sffamily \textbf{3.} \rmfamily \emph{Jo Swinson}\\
+\sffamily \textbf{4.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\linewidth}
+\sffamily \textbf{Q3.} \rmfamily Generally speaking, what type of toothbrush do you use?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Manual}\\
+\sffamily \textbf{2.} \rmfamily \emph{Electric}\\
+\sffamily \textbf{3.} \rmfamily \emph{I do not have a toothbrush}\\
+\sffamily \textbf{4.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+
+
+<!-- Question 4 -->
+\begin{minipage}[t]{0.4\linewidth}
+\sffamily \textbf{Q4.} \rmfamily In hindsight, do you think Britain was right or wrong to vote to leave the European Union?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Right to leave}\\
+\sffamily \textbf{2.} \rmfamily \emph{Wrong to leave}\\
+\sffamily \textbf{3.} \rmfamily \emph{Neither right nor wrong}\\
+\sffamily \textbf{4.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\linewidth}
+\sffamily \textbf{Q4.} \rmfamily When brushing your teeth, do you...\\
+\\
+\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Wet your toothbrush, then apply toothpaste?}\\
+\sffamily \textbf{2.} \rmfamily \emph{Apply toothpaste, then wet your toothbrush?}\\
+\sffamily \textbf{3.} \rmfamily \emph{Not wet your toothbrush at all}\\
+\sffamily \textbf{4.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+
+
+<!-- Question 5 -->
+\begin{minipage}[t]{0.4\linewidth}
+\sffamily \textbf{Q5.} \rmfamily How well or badly do you think the government are doing at handling Britain's exit from the European Union?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Very well}\\
+\sffamily \textbf{2.} \rmfamily \emph{Fairly well}\\
+\sffamily \textbf{3.} \rmfamily \emph{Neither well nor badly}\\
+\sffamily \textbf{4.} \rmfamily \emph{Fairly badly}\\
+\sffamily \textbf{5.} \rmfamily \emph{Very badly}\\
+\sffamily \textbf{6.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\linewidth}
+\sffamily \textbf{Q5.} \rmfamily Generally speaking, on average how many times do you brush your teeth every day?\\
+\\
+\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Never}\\
+\sffamily \textbf{2.} \rmfamily \emph{Once}\\
+\sffamily \textbf{3.} \rmfamily \emph{Twice}\\
+\sffamily \textbf{4.} \rmfamily \emph{Three times}\\
+\sffamily \textbf{5.} \rmfamily \emph{More than three times}\\
+\sffamily \textbf{6.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+
+\pagebreak
+
+<!-- Treatment ends-->
+\begin{minipage}[t]{\linewidth}
+\sffamily{\textbf{Treatment ends. Subsequent questions identical for each group.}}\\
+\end{minipage}
+
+
+<!-- Question 6 -- All -->
+\begin{minipage}[t]{\linewidth}
+\sffamily \textbf{Q6.} \rmfamily Now, a few questions about economic conditions. How does the \emph{financial situation of your household} now compare with what it was 12 months ago?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Got a lot worse}\\
+\sffamily \textbf{2.} \rmfamily \emph{Got a little worse}\\
+\sffamily \textbf{3.} \rmfamily \emph{Stayed the same}\\
+\sffamily \textbf{4.} \rmfamily \emph{Got a little better}\\
+\sffamily \textbf{5.} \rmfamily \emph{Got a lot better}\\
+\sffamily \textbf{6.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+
+
+<!-- Question 7 -- All -->
+\begin{minipage}[t]{\linewidth}
+\sffamily \textbf{Q7.} \rmfamily How do you think the \emph{general economic situation} in this country has changed over the last 12 months?\\
+\\
+\sffamily \textbf{1.} \rmfamily \emph{Got a lot worse}\\
+\sffamily \textbf{2.} \rmfamily \emph{Got a little worse}\\
+\sffamily \textbf{3.} \rmfamily \emph{Stayed the same}\\
+\sffamily \textbf{4.} \rmfamily \emph{Got a little better}\\
+\sffamily \textbf{5.} \rmfamily \emph{Got a lot better}\\
+\sffamily \textbf{6.} \rmfamily \emph{Don't know}\\
+\\
+\end{minipage}
+
+\setlength\parindent{2em}
+
+\pagebreak
+
+
+# Appendix C: Prior Distributions for Ordered Regression Models
+
+As I discuss in my methods section above, my experiment includes an outcome variables that is ordinal rather than continuous or binary. Though others often treat these data as though they are continuous for the sake of convenience, this practice is prone to a whole host of serious inferential pitfalls. Further, though more robust, almost all conventional ordered regression models face similar issues. As such, I use Bayesian methods to implement an extended ordered regression model that overcomes these problems, thereby allowing me to estimate any treatment effects in a principled manner that respects the nature of the data.
+
+Though similar, the Bayesian approach to statistical analysis does introduce some points of difference compared to the classical statistics that dominates much political science research. Most notably, it requires that one specify a prior distribution over each parameter in one's model before fitting it to the data^[For an introduction to Bayesian analysis, see @mcelreath2020; @lambert2018; @kruschke2017; @kruschke2015]. As well as allowing us to shift focus from the likelihood (*"what is the probability of the data given the hypothesis?"*) to the posterior distribution (*"what is the probability of the hypothesis given the data?"*), these "priors" also serve two useful purposes. First, they allow us to incorporate any pre-existing knowledge that we might be privy to into our models. This might include the results of a previous analysis (thereby having our model expect results similar to the previous case before it sees the data) or simply our understanding of the nature of the model and what values it is reasonable for certain parameters to take (for example, we know that it is not possible for probabilities to be negative). Second, they make our models sceptical by nature and shrink any parameter estimates towards the prior. This "regularization" protects against over-fitting common to maximum likelihood-based approaches, especially where sample sizes are small [@mcelreath2020; @lambert2018; @gelman2014a].
+
+In this case, there is little existing evidence on which to draw. Though others have fielded the same economic perception items in the past, they have tended to do so in an observational, rather than an experimental, context. As a result, I do not have a good idea about what values my parameters might take before I fit the model to the data. To complicate matters further, ordered regression models have many moving parts, which interact with one another to produce the implied ordinal outcome. To overcome this complication, I take a principled approach below and decide my priors based on a series of prior predictive simulations. In doing so, I seek to ensure that all my decisions be conservative so that any treatment effects I estimate will be robust. This has two implications. First, that I should assume all effects to be zero before fitting my model to the data. Second, that I should also assume all possible combination of response probabilities to be equally likely. The various ordered regression models that I present in this paper rely on the same three sets of parameters, each of which serves a distinct function. I discuss each specific parameter in turn, below.
+
+
+## Threshold Parameters
+
+<!-- ![Before seeing the data, the most conservative assumption that we can make about the distribution of response options is that each combination is as likely as any other. This implies that prior thresholds must be able to take any possible value on the probability scale, conditional on the constraints of the model itself. A Normal(0, 1) prior on the latent probit scale yields fulfils this requirement and implies a flat prior on the probability scale. The figure above shows the resulting prior threshold parameters. Note also that the probability of a threshold occurring at any point on the scale is constant over the entire range of the scale (with any deviations arising only due to random noise in the simulation process).](_assets/figure_a2.pdf) -->
+
+Ordered regression models work by translating between an ordinal variable that we observe and a continuous variable that we do not. To perform this feat, they rely on a series of threshold parameters that split the latent continuous distribution into as many segments as their are response options. The are of each segment then corresponds to the probability that the response option that it represents will occur. Absent any knowledge about the nature of the data, the most conservative assumption that we can make is that any possible combination of responses is as likely as any other.
+
+As we measure each response option in terms of its probability of occurring, it is worth also thinking on the probability scale when setting our priors. Thus, given this assumption, we should expect the probability of a threshold parameter landing on any point on the probability scale to be constant. The issue then is to find a prior on the latent probit scale on which the model operates, which ranges from $-\infty$ to $+\infty$, that gives a flat prior on the probability scale that we really care about, which is bounded by 0 and 1. Fortunately, this is not difficult and the answer is relatively well-known: a Normal(0, 1) prior on the former gives a uniform prior on the latter.
+
+The four left-most panels of figure A2 show the resulting prior distributions that this collective prior over all thresholds implies for each specific threshold. The right-most panel instead shows the implied prior over the whole probability scale (i.e. the distribution that we would find were we to stack each threshold distribution on top of each other). As the histograms in the figure make clear, the implied priors for each threshold are non-informative and, in all cases, take a wide range of possible values. For example, the priors shown here allow for a non-zero probability that the first threshold occurs as high as the $80\%$ mark and the fourth threshold as low as $20\%$. That the first response option corresponds to respondents reporting that the economy "got a lot worse" and the last that it has "got a lot better" reaffirms just how non-informative these priors really are.
+
+Though we do not specify priors for each specific threshold, these prior predictive simulations suggest that they take their own distinctive shapes nonetheless. This phenomenon arises due to the constraints that both the prior and the model impose on the values that these parameters can take. For example, each threshold is constrained to take only values smaller than those of the threshold that follow it. As a result, it is not possible for any threshold to cover the entire space as this would leave the others with nowhere to go. Likewise, the collective nature of the prior means that the priors for each threshold *must* result in a flat prior overall. The result is the set of symmetrical distributions that we see above.
+
+
+## Beta Parameters
+
+<!-- ![While it is common to set wide priors on beta values where the outcome is continuous, such "noninformative" priors have perverse consequences when the outcome is ordered. This is because they make the latent scale too diffuse, thereby concentrating almost all of the prior probability mass at the two extremes of the observed ordinal outcome scale. Further, models that include many independent variables or independent variables that take extreme values worsen this problem further.](_assets/figure_a3.pdf) -->
+
+Threshold parameters segment the latent outcome distribution, though do not move. Beta parameters, instead, shift the latent distribution up and down its scale. This movement then serves to shift the probability mass of each observed response option in turn. As such, we can interpret beta parameters much like regression coefficients in linear and logistic regression models, which perform a similar role.
+
+Before seeing the data, the most conservative assumption that one can make about these effects is that they are equal to zero (i.e. that they are null). Doing so is simple and, in the absence of any better information, uncontroversial. More difficult however is determining how uncertain these priors should be. One the one hand, a tight prior around zero will be very conservative, but perhaps to the extent that it ignores perfectly informative data. On the other, a loose prior will pay closer attention to the data, but perhaps to the extent that it will result in over-fitting.
+
+For models with continuous outcomes, things are straightforward. If the prior is very wide, then it is also likely to cover the full range of plausible values that its respective parameter might take. But ordinal variables are not continuous and, as a result, this common practice can lead to perverse implications. Unlike models with continuous outcomes, wide priors on the latent probit scale *do not* give wide priors on the outcome scale. This is because the outcome scale takes only a finite set of discrete values. As a result, wide priors on the latent probit scale instead imply U-shaped priors due to probability mass piling up at the extremes. This problem then multiplies --- quite literally --- where the data include variables that exhibit a high degree of variation (for example age, which in the study of voting behavior might take any value between 18 and 100) or where the sum of all variables is large (such as when a model contains many parameters).
+
+Figure A3 displays this phenomenon across different priors and different values of beta. Where these sum to zero, only the thresholds determine the response distribution, which I fix to ensure that each response has a prior probability of $20\%$ where betas sum to zero. As the figure shows, when this sum exceeds zero the prior probability of responding with either a 1 or a 5 increases. This is true for all priors, though the effect is most pronounced where the prior standard deviations are large. In each model in this paper, the sum of parameters increases where respondents voted at the last election or are in the treatment group. In light of this, using a prior on beta with a large standard deviation is akin to assuming that these participants are more likely to say either that the economy has "got a lot worse" or "got a lot better". Perhaps counter-intuitively, smaller standard deviations are, thus, less informative. Thus, I use the least informative prior --- Normal(0, 0.25) --- for all beta values in my models.
+
+
+## Delta Parameters
+
+<!-- ![Setting diffuse priors on delta parameters can also have perverse consequences. In this case, they instead concentrate the prior probability mass in the middle and at the two extremes of the observed ordinal variable. Again, this is likely to be worse where models also include many independent variables or independent variables that take extreme values.](_assets/figure_a4.pdf) -->
+
+Whereas beta parameters shift the latent outcome distribution, delta parameters instead compress or disperse it at a given point. This serves to redistribute the observe outcome's probability mass towards central or extreme responses, conditional on its place on the scale. As in the previous case, the most conservative assumption that we can make before seeing the data is to expect these parameters to be equal to zero. Where this is true, the standard deviation of the latent outcome distribution does not vary across participants. Again, this is simple to achieve and, again, things become more complicated when it comes to setting the standard deviation. The problem is the same as before: large standard deviations imply more, not less, informative outcomes. 
+
+Figure A4 is similar to figure A4 and shows the implication that different priors and different values of delta have on the implied prior outcome distribution. As before, I fix all thresholds in this case to imply an equal chance of any response option being selected and also fix all beta parameters to 0. While wide priors on the beta parameters produced U-shaped distributions, wide priors on the delta parameters do not. Instead, they increase the prior probability of central and extreme responses, resulting in a crown-like distribution. Note, however, that this pattern is conditional on the choice of thresholds and that U-shaped distributions may arise here too under different circumstances. As before, each response has an equal probability where the sum of delta parameters is zero. As this sum increases, the central response option becomes much more likely and extreme responses somewhat more likely. This implies that tighter standard deviations are also less informative in this case too. Given this, I opt to use 
+
+While the beta parameters produced U-shaped distributions, these do not. Instead, they increase the prior probability of central and extreme responses. Note, however, that this is conditional on the choice of thresholds. Where these do not equalize the probability of each response, a U-shape can still emerge. As before, each response has an equal probability when the sum of parameter values is zero. As this sum increases, the central response becomes much more likely. Likewise, extreme responses become somewhat more likely too. Given this, I take the right-most distribution --- a Normal(0, 0.25) prior --- as the prior for each of my delta values as it remains most constant across all cases.
+
+\pagebreak
+
+
+# Appendix D: Robustness Checks
+
+There are three plausible objections to the results I report above. First, that the treatment effects occur due to some mechanism other than partisan bias. Second, that the theory does not generalize to other types of electoral identification. And, third, that the results are sensitive to my model specification. I test each below. The first tests if the treatment mechanism relies on partisan bias. To do so, I apply the same test to participants' reported *personal* economic perceptions. Past research finds that these show little sensitivity to party identification. The second tests if the theory generalizes to other types of identification. In particular, voting behavior at the 2016 referendum on European Union membership. The third tests if the findings are robust to different methods. In this case, by substituting ordered regression for multinomial regression instead.
+
+
+## Personal Economic Perceptions and Partisan Bias as a Potential Mechanism
+
+<!-- ![Political surveys do not cause voters to report different perceptions of their own personal finances (left panel). This is unsurprising, since prior research shows that they are much less sensitive to party identification. Positive values imply that those in the treatment group were more likely to report a given response. Negative values imply the opposite. In general, treatment effects showed the expected signs. Incumbent voters were more positive. Likewise, opposition voters were more negative. Even so, in all cases, the distribution of treatment estimates were centred on small values and had a plausible chance of being practically-equivalent to zero. Here, density plots show the posterior distribution of conditional average treatment effects. Further, black bars show the 95% credible interval and point estimates the median.](_assets/figure_3.pdf) -->
+
+Above, I assume that my findings result from partisan bias. This seems reasonable given existing research [@devries2018; @bartels2002; @conover1987]. Even so, a skeptic might argue that I have not yet provided good evidence that this is indeed the case. Instead, they might argue that some other mechanism is reasonable for my findings. As a result, the pattern that I observe might also apply to any other dependent variable. This is a reasonable objection, as my design does not allow me to tease apart any intermediary steps in the causal chain between survey context and reported economic perceptions. Fortunately, there are ways to reduce this uncertainty. One is to test how the treatment affects a similar item that we know suffers from little partisan bias. Voters' perceptions of their own personal finances are on such possibility. Like national-level items, these too have their origin in consumer confidence surveys [@katona1951]. But, unlike national-level items, they are much less sensitive to partisan bias. This makes sense. After all, many would argue that the government is less accountable for any one person's well-being than it is for the well-being of the nation as a whole [@lewis-beck2017; @lewis-beck2000; @paldam1981; @kinder1981; @kinder1979; though see @tilley2018].
+
+Figure A5 shows how the treatment affected the personal economic perceptions that my participants reported. As before, I condition these estimates on prior voting behavior for the same reasons as above. In this case, all treatment effects have the expected signs. That is, incumbent supporters are more positive and opposition supporters more negative under the treatment. This might, then, suggest the presence of at least some partisan bias. Yet, in all cases, point estimates are small. These range in size from only $0.4$ to $1.9$ percentage points. Further, these effects have $95\%$ credible intervals that, in all cases, are very uncertain.
+
+Taken together, these results suggest little evidence that political surveys affect the personal economic perceptions that respondents report. Were some other mechanism responsible for the treatment effects I find, this might not be the case. Instead, I find that the treatment might have a similar effect for both items. Instead, both sets of results are consistent with existing theory and the argument that I present above. That is, respondents must have a reason to assign responsibility to the government if political surveys are to prime respondents to respond in a different way. This does not seem to be the case for perceptions of one's personal finances. Instead, they appear to exhibit little partisan bias, leaving the treatment with nothing to manipulate. Of course, it is never possible to rule out any other mechanism with absolute certainty. Still, these results do at least make such a possibility seem much less likely.
+
+
+## Generalization of Treatment Effects Across Different Types of Electoral Identification
+
+If the theory that underpins my analysis is robust, it should generalize to other types of political identification. The British case is useful in this respect. Due to the 2016 referendum on EU membership. the country now has *two* forms of electoral identification^[And yet more still in Scotland, where unionist versus nationalist identities rose to prominence as a result of the 2014 referendum on Scottish independence.]. The first is conventional party identification. The second is identification with either the Leave or Remain side at the EU referendum. Further, recent evidence shows that the latter also affects how voters report to perceive the economy [@fieldhouse2020; @sorace2018]. As the Leave side won, supporting it is now, for all intents and purposes, akin to supporting the incumbent party. By the same logic, supporting Remain is now akin to supporting an opposition party. Accordingly, we should expect any treatment effects to generalize to EU referendum identification in the same way as does party identification.
+
+<!-- \input{_assets/tab1.tex} -->
+
+<!-- ![Political surveys cause participants to report different perceptions of the national economy, conditional on their voting behavior at the 2016 referendum on European Union membership. Like with party identification, these effects are most pronounced where they voted for the winning side (Leave). But, in this case, there is also good evidence of a treatment effect on Remain voters too. Positive values imply that those in the treatment group were more likely to report a given response. Negative values imply the opposite. Density plots show the posterior distribution of conditional average treatment effects. Black bars show their 95% credible interval and point estimates their median.](_assets/figure_4.pdf) -->
+
+EU and party identification are not unrelated. But, the former does still cut across the latter to a meaningful extent. Table A1 makes this clear. It shows the proportion of participants who voted for each combination of options at the 2016 referendum on EU membership and the 2017 general election. As we can see, participants who voted for the incumbent Conservative Party in 2017 most often voted to leave in 2016. Likewise, those who voted for an opposition party most often voted to remain. But this is not true in all cases. For example, $27.3\%$ of participants who voted for the incumbent Conservative Party also voted to remain in the EU. Similarly, $26.4\%$ of participants who voted for an opposition party also voted to leave. Further, $12.1\%$ of participants voted only in 2016. Thus, we should not expect treatment effects for EU identification to be mere reflections of those across party identification.
+
+Fortunately, the fourth question on the political survey primed voters to consider how they voted at the 2016 referendum (see appendix B). Figure A6 shows the corresponding treatment effects. In this case, Leave supporters in the treatment group were $4.7$ percentage points ($95\%$ CI $= -8.3$pp to $-1.1$pp) less likely to report either that the economy "got a little worse" and $-4.5$ percentage points ($95\%$ CI $= -7.2$pp to $-2.0$pp) less likely to say that it "got a lot worse". They were also $6.2$ percentage points ($95\%$ CI $= 2.5$pp to $9.9$pp) more likely to report that it had "stayed the same" and $3.0$ percentage points ($95\%$ CI $= 0.0$pp to $5.9$pp) more likely to report that it "got a little better". Again, almost no one said that the economy "got a lot better" and there was no meaningful treatment effect ($0.1$pp, $95\%$ CI $= -0.9$pp to $1.0$pp).
+
+Those who voted Remain also showed similar effects to opposition voters. Yet they were much more likely to say that the economy "got a lot worse" in the last twelve months. This effect was large ($4.5$pp). Further, though its $95\%$ credible interval crossed zero ($95\%$ CI $= -0.6$pp to $9.6$pp), $95.4\%$ of the posterior distribution was greater than zero. Thus, we can be reasonably confident that the true effect is, in fact, greater than zero. Likewise, given these results, we can also be confident that the treatment generalizes to other types of electoral identification too.
+
+
+## Sensitivity of Treatment Effects to Modeling Assumptions
+
+<!-- ![Using a multinomial rather than an ordinal model does little to change the results. We still find that political surveys cause incumbent voters to report more positive economic perceptions (left panel). Positive values imply that those in the treatment group were more likely to report a given response. Negative values imply the opposite. Density plots show the posterior distribution of conditional average treatment effects. Further, black bars show the 95% credible interval and point estimates the median.](_assets/figure_5.pdf) -->
+
+Ordered regression models estimate effects that are consistent across threshold parameters and, thus, across responses. This is known as the proportional odds assumption [@agresti2010; @mccullagh1980]. Consider the present case. The treatment has a positive effect on the national economic perceptions that incumbents report when measured on the probit scale (see Table A2 in the appendix). This is why they are more likely to say that the economy "got a little better" or "stayed the same" and less likely to say that the economy "got a little worse" or "got a lot worse". But, of course, this assumption may not hold. Instead, the treatment might have a unique effect on each response option.
+
+To relax this assumption, we can use multinomial regression instead. Figure A7 shows the resulting estimates from such a model. Note that the multinomial model is less efficient and, thus, estimates tend to be less precise. Even so, they still lead to the same conclusion: that political survey effects are most clear where participants voted for the incumbent at the last election. Here, incumbent voters were $7.7$ percentage points less likely to say that the economy "got a little worse" ($95\%$ CI $= -13.3$pp to $-1.8$pp) and $-2.5$ percentage points that it "got a lot worse" ($95\%$ CI $= -5.5$pp to $0.5$pp). They were also $6.2$ percentage points ($95\%$ CI $= 0.2$pp to $12.1$pp) more likely to say that the economy had "stayed the same" and $4.1$ percentage points ($95\%$ CI $= -0.4$pp to $8.6$pp) more likely to say that it "got a little better". Results for opposition supporters and non-voters differ little to the results in figure 2. Thus, my conclusions also appear robust to model specification.
+
+\pagebreak
+
+
+
+# Appendix E: Regression Tables
+
+<!-- \input{_assets/taba1.tex} -->
+
+\pagebreak
+
+<!-- \input{_assets/taba2.tex} -->
+
+\pagebreak
+
+<!-- \input{_assets/taba3.tex} -->
+
+\pagebreak
+
+<!-- \input{_assets/taba4.tex} -->

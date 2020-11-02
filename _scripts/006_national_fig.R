@@ -161,6 +161,11 @@ cates <-
   )
 
 
+# Now we'll save the CATEs to disk so that we can include them in the paper.
+
+saveRDS(cates, here("_output", "cates_m1.rds"))
+
+
 # We'll also use these data to create summaries that we can use as labels
 
 cate_labs <-
@@ -239,6 +244,20 @@ nat_fig <-
   labs(title = "Political Surveys Bias Voters' National Economic Perceptions",
        x = "Conditional Average Treatment Effect (Percentage Points)")
 
+
+# As this is the key figure in the paper, we'll also save it to disk so that
+# we can use it when publicising the paper. Before we do, we'll remove the
+# title and reduce the text size a little.
+
+png(
+  filename = here("_output", "national_fig.png"),
+  width = 5,
+  height = 3.125,
+  units = "in",
+  res = 300
+)
+nat_fig + theme(plot.title = element_blank())
+dev.off()
 
 
 # 3. Replication details --------------------------------------------------
