@@ -241,8 +241,7 @@ nat_fig <-
   theme(axis.title.y = element_blank(),
         axis.ticks.x = element_line(lineend = "round"),
         axis.text.y = element_text(hjust = 0.5)) +
-  labs(title = "Political Surveys Bias Voters' National Economic Perceptions",
-       x = "Conditional Average Treatment Effect (Percentage Points)")
+  labs(x = "Conditional Average Treatment Effect (Percentage Points)")
 
 
 # As this is the key figure in the paper, we'll also save it to disk so that
@@ -256,7 +255,7 @@ png(
   units = "in",
   res = 300
 )
-nat_fig + theme(plot.title = element_blank())
+nat_fig
 dev.off()
 
 
