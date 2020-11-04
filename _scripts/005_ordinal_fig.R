@@ -333,18 +333,6 @@ ord_fig <- ggarrange(prt1, prt2,
                      heights = c(1, .875))
 
 
-# And finally we'll give the figure a title
-
-ord_fig <- 
-  annotate_figure(ord_fig,
-                  top = text_grob("Extending the Ordered Regression Model",
-                                  family = "Cabin",
-                                  face = "bold",
-                                  size = 12,
-                                  just = "left",
-                                  hjust = 0.93))
-
-
 
 # 4. Replication details --------------------------------------------------
 
