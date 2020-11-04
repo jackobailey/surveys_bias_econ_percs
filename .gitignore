@@ -29,3 +29,5 @@ vignettes/*.pdf
 # Apple stuff
 .DS_Store
 .*
+# Large data
+_data/*.zip
