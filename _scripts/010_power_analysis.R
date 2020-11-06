@@ -383,10 +383,17 @@ power_fig <-
   scale_x_discrete("Random Seed Ordered by Lower 95% Credible Interval", breaks = NULL) +
   scale_fill_grey(start = .9, end = .6) +
   labs(
-    title = "Power Analysis Suggests a Sample of 2,500 to Reach 80% Power",
-    y = "95% Credible Interval of Estimated Effect") +
+    y = "95% Credible Interval of Estimated Effect",
+    fill = "Sample Size") +
   coord_cartesian(ylim = c(-0.5, 1.5)) +
-  theme_bailey()
+  theme_bailey() +
+  theme(legend.position = "bottom")
+
+
+# Save power_fig so that we don't have to rerun the power analyses every
+# time we want to call the plot.
+
+save(power_fig, file = here("_output", "power_fig.rda"))
 
 
 # Calculate proportion of simulations > 0
