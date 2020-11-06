@@ -243,8 +243,7 @@ per_fig <-
   theme(axis.title.y = element_blank(),
         axis.ticks.x = element_line(lineend = "round"),
         axis.text.y = element_text(hjust = 0.5)) +
-  labs(title = "Political Surveys Do Not Bias Voters' Personal Economic Perceptions",
-       x = "Conditional Average Treatment Effect (Percentage Points)")
+  labs(x = "Conditional Average Treatment Effect (Percentage Points)")
 
 
 
