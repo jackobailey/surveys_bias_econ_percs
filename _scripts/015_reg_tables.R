@@ -166,7 +166,7 @@ table <-
     escape = FALSE,
     align = c("l ", rep("D{.}{.}{-1} ", 4)),
     linesep = "",
-    caption = "Incumbent supporters report more positive economic perceptions when they answer in a political versus a non-political survey. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election. Note: Each model was fit with 2,000 iterations across 4 chains. After discarding 1,000 warmup samples per chain, the total number of samples = 4,000. R-hats = 1 for all parameter estimates, indicating model convergence.",
+    caption = "Incumbent supporters report more positive economic perceptions when they answer in a political versus a non-political survey. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election.",
     label = "tabA1"
   ) %>% 
   kable_styling(
@@ -324,7 +324,7 @@ table <-
     escape = FALSE,
     align = c("l ", rep("D{.}{.}{-1} ", 4)),
     linesep = "",
-    caption = "Respondents do not differ in how they report their personal economic perceptions when they answer in a political versus a non-political survey. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election. Note: Each model was fit with 2,000 iterations across 4 chains. After discarding 1,000 warmup samples per chain, the total number of samples = 4,000. R-hats = 1 for all parameter estimates, indicating model convergence.",
+    caption = "Respondents do not differ in how they report their personal economic perceptions when they answer in a political versus a non-political survey. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election.",
     label = "tabA2"
   ) %>% 
   kable_styling(
@@ -482,7 +482,7 @@ table <-
     escape = FALSE,
     align = c("l ", rep("D{.}{.}{-1} ", 4)),
     linesep = "",
-    caption = "Like party identification, those who voted for the winning side at the 2016 referendum on European Union membership report more positive economic perceptions when they answer in a political versus a non-political survey. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election. Note: Each model was fit with 2,000 iterations across 4 chains. After discarding 1,000 warmup samples per chain, the total number of samples = 4,000. R-hats = 1 for all parameter estimates, indicating model convergence.",
+    caption = "Like party identification, those who voted for the winning side at the 2016 referendum on European Union membership report more positive economic perceptions when they answer in a political versus a non-political survey. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election.",
     label = "tabA3"
   ) %>% 
   kable_styling(
@@ -662,7 +662,7 @@ table <-
     escape = FALSE,
     align = c("l ", rep("D{.}{.}{-1} ", 4)),
     linesep = "",
-    caption = "That incumbent supporters report more positive economic perceptions when they answer in a political versus a non-political survey is robust to model specification. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election. Note: Each model was fit with 2,000 iterations across 4 chains. After discarding 1,000 warmup samples per chain, the total number of samples = 4,000. R-hats = 1 for all parameter estimates, indicating model convergence.",
+    caption = "That incumbent supporters report more positive economic perceptions when they answer in a political versus a non-political survey is robust to model specification. Data come from a survey experiment conducted by YouGov between 6th and 8th November 2019, the start of the campaign for the 2019 UK General Election.",
     label = "tabA4"
   ) %>% 
   kable_styling(
@@ -692,5 +692,18 @@ table <-
 sink(file = here("_paper", "_assets", "tabA4.tex"))
 cat(table)
 sink()
+
+
+
+# 6. Replication details --------------------------------------------------
+
+# Save session information
+
+save_info(here("_output", "_session_info", "015_reg_tables.txt"))
+
+
+# One last thing...
+
+thanks()
 
 
