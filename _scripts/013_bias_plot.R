@@ -37,7 +37,7 @@ library(here)
 
 # Load BESIP data and select variables
 
-bes <- 
+dta <- 
   read_dta(here::here("_data", "BES2019_W19_Panel_v0.3.dta.zip")) %>% 
   select(
     id,
@@ -48,28 +48,28 @@ bes <-
 
 
 
-# 2. Transform BESIP data ----------
+# 2. Transform BESIP data -------------------------------------------------
 
-# The BESIP data take a little more work because they're panel data
-# and initially in a wide-format. We need to convert them instead to
-# long-format to get them to work.
+# The BESIP data take a little more work because they're panel data and
+# initially in a wide-format. We need to convert them instead to long-format
+# to get them to work.
 
-# First, we'll rename the economic perception items so that they are
-# the same as the cms version. We'll do the same with party id too.
+# First, we'll rename the economic perception items so that they are the
+# same as the cms version. We'll do the same with party id too.
 
-names(bes)[2:16] <- paste0("date_", c(1:4, 6:8, 10:17))
+names(dta)[2:16] <- paste0("date_", c(1:4, 6:8, 10:17))
 
-names(bes)[17:31] <- paste0("econ_", c(1:4, 6:8, 10:17))
+names(dta)[17:31] <- paste0("econ_", c(1:4, 6:8, 10:17))
 
-names(bes)[32:46] <- paste0("pid_", c(1:4, 6:8, 10:17))
+names(dta)[32:46] <- paste0("pid_", c(1:4, 6:8, 10:17))
 
 
-# Next, we'll convert the data from wide- to long-format so that it
-# reflects the structure of the cms data. This will also make it
-# easier to transform the variables.
+# Next, we'll convert the data from wide- to long-format so that it reflects
+# the structure of the cms data. This will also make it easier to transform
+# the variables.
 
-bes <- 
-  bes %>% 
+dta <- 
+  dta %>% 
   pivot_longer(cols = -id, 
                names_to = c(".value", "group"),
                names_sep = "_")
@@ -77,8 +77,8 @@ bes <-
 
 # Next, we'll convert the econ variable to an ordered factor
 
-bes <- 
-  bes %>% 
+dta <- 
+  dta %>% 
   mutate(
     econ =
       econ %>% 
@@ -89,8 +89,8 @@ bes <-
 
 # Next, we'll do the same for party id
 
-bes <- 
-  bes %>% 
+dta <- 
+  dta %>% 
   mutate(
     pid =
       pid %>% 
@@ -112,8 +112,8 @@ bes <-
       )
   )
 
-bes <- 
-  bes %>% 
+dta <- 
+  dta %>% 
   mutate(
     ion =
       case_when(
@@ -136,28 +136,27 @@ bes <-
   )
 
 
-# Now we need to rename the time variable to survey so that it matches
-# the cms data. We'll also add "wave" in front of the wave number
+# Now we need to rename the time variable to survey so that it matches the
+# cms data. We'll also add "wave" in front of the wave number
 
-bes <- 
-  bes %>% 
+dta <- 
+  dta %>% 
   rename(survey = group) %>% 
   mutate(survey = paste("wave", survey))
 
 
 # Finally, we'll remove any missing data list-wise
 
-bes <- 
-  bes %>% 
+dta <- 
+  dta %>% 
   na.omit()
 
 
 
-# 4. Fit model ----------
+# 4. Fit model ------------------------------------------------------------
 
-# Now we'll fit a similar model to the experimental model to each
-# wave of data. The only difference is that there is no treatment
-# variable. 
+# Now we'll fit a similar model to the experimental model to each wave of
+# data. The only difference is that there is no treatment variable. 
 
 for(i in c(1:4, 6:8, 10:17)){
   
@@ -173,28 +172,28 @@ for(i in c(1:4, 6:8, 10:17)){
       prior(normal(0, 0.25), class = "b") +
       prior(normal(0, 0.25), class = "b", dpar = "disc"),
     data =
-      bes %>%
+      dta %>%
       filter(survey == paste("wave", i)),
     inits = 0,
     iter = 2e3,
     chains = 4,
     cores = 4,
-    file = here("_models", "_bias", paste0("bias_w", i))
+    file = here("_output", "_bias", paste0("bias_w", i))
   )
   
 }
 
 
 
-# 5. Plot partisan bias ----------
+# 5. Plot partisan bias ---------------------------------------------------
 
-# Before we create the plot, we need to load all of the different
-# model fit objects. This includes the experimental model ("m1")
-# and each of the wave-specific models we fit above ("bias_wx").
-# To make these easy to handle, we'll save them all to a list
-# were each element is given the name of the model in question.
+# Before we create the plot, we need to load all of the different model fit
+# objects. This includes the experimental model ("m1") and each of the
+# wave-specific models we fit above ("bias_wx"). To make these easy to handle,
+# we'll save them all to a list were each element is given the name of the
+# model in question.
 
-m1 <- readRDS(here("_models", "model1.rds"))
+m1 <- readRDS(here("_output", "m1.rds"))
 
 models <- list()
 
@@ -203,7 +202,7 @@ for(i in c(1:4, 6:8, 10:17)){
   models[[paste0("bias_w", i)]] <- 
     readRDS(
       here(
-        "_models",
+        "_output",
         "_bias",
         paste0("bias_w", i, ".rds")
       )
@@ -212,8 +211,8 @@ for(i in c(1:4, 6:8, 10:17)){
 }
 
 
-# Now we'll replace the model fits for each wave with posterior
-# draws for the "ionInc" and "ionOpp" effects.
+# Now we'll replace the model fits for each wave with posterior draws for
+# the "ionInc" and "ionOpp" effects.
 
 m1 <-
   m1 %>% 
@@ -242,15 +241,14 @@ for(i in c(1:4, 6:8, 10:17)){
 }
 
 
-# Now we'll combine the list into a single data frame so that
-# we can plot it.
+# Now we'll combine the list into a single data frame so that we can plot it.
 
 models <- do.call(rbind.data.frame, models)
 
 
-# Next, we'll create a new variable that tells us what proportion
-# of the incumbent and opposition effects we see for each wave we
-# might attribute to the political survey context.
+# Next, we'll create a new variable that tells us what proportion of the
+# incumbent and opposition effects we see for each wave we might attribute
+# to the political survey context.
 
 models <- models %>% mutate(bias = NA)
 
@@ -271,8 +269,7 @@ for(i in c(1:4, 6:8, 10:17)){
 }
 
 
-# Finally, we'll average these estimates and row bind them to
-# the data.
+# Finally, we'll average these estimates and row bind them to the data.
 
 mean_bias <- 
   models %>% 
@@ -314,7 +311,7 @@ bias_labs <-
 # Now we can get started plotting. First, we'll create a rudimentary
 # plot using ggplot.
 
-fig6 <- 
+bias_fig <- 
   models %>% 
   mutate(
     var =
@@ -346,8 +343,8 @@ fig6 <-
 # Now we'll add the density plots for the posterior proportion of bias
 # estimates that we just computed.
 
-fig6 <- 
-  fig6 +
+bias_fig <- 
+  bias_fig +
   stat_halfeyeh(aes(slab_fill = var,
                     slab_colour = var),
                 .width = .95,
@@ -376,8 +373,8 @@ fig6 <-
 
 # Next we'll make it look nicer
 
-fig6 <- 
-  fig6 +
+bias_fig <- 
+  bias_fig +
   scale_y_discrete(labels = function(x) str_wrap(x, width = 8)) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1),
                      breaks = seq(-1, 1, by = .5)) +
@@ -390,22 +387,19 @@ fig6 <-
   theme(axis.title.y = element_blank(),
         axis.ticks.x = element_line(lineend = "round"),
         axis.text.y = element_text(hjust = 0.5)) +
-  labs(title = "Quantifying Political Surveys Bias in Voters' National Economic Perceptions",
-       subtitle = "If we assume that the political survey effect is an upper-bound, we find that it represents around one-quarter of all\nincumbent partisan bias that we find in economic perceptions reported in the BES Internet Panel 2014–2023.",
-       x = "Proportion of Partisan Bias Attributable to the Political Survey Context")
-
-
-# Finally, we'll render the plot as a PDF
-# Save as PDF
-
-cairo_pdf(file = here("_output", "figure_6.pdf"),
-          width = 5.97,
-          height = 7.38)
-fig6
-dev.off()
+  labs(x = "Proportion of Partisan Bias Attributable to the Political Survey Context")
 
 
 
-# 6. Thanks for replicating! ----------
-# Any comments or questions, feel free to get in touch
-# at jack.bailey@manchester.ac.uk
+# 6. Replication details --------------------------------------------------
+
+# Save session information
+
+save_info(here("_output", "_session_info", "013_bias_plot.txt"))
+
+
+# One last thing...
+
+thanks()
+
+
