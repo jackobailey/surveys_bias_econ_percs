@@ -20,11 +20,11 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] janitor_2.0.1      haven_2.3.1        ggpubr_0.4.0       tidybayes_2.1.1   
- [5] here_0.1           brms_2.14.0        Rcpp_1.0.5         jbmisc_1.1        
- [9] magrittr_1.5       forcats_0.5.0      stringr_1.4.0      dplyr_1.0.2       
-[13] purrr_0.3.4        readr_1.4.0        tidyr_1.1.2        tibble_3.0.4      
-[17] ggplot2_3.3.2.9000 tidyverse_1.3.0    kableExtra_1.3.1  
+ [1] lubridate_1.7.9    janitor_2.0.1      haven_2.3.1        ggpubr_0.4.0      
+ [5] tidybayes_2.1.1    here_0.1           brms_2.14.0        Rcpp_1.0.5        
+ [9] jbmisc_1.1         magrittr_1.5       forcats_0.5.0      stringr_1.4.0     
+[13] dplyr_1.0.2        purrr_0.3.4        readr_1.4.0        tidyr_1.1.2       
+[17] tibble_3.0.4       ggplot2_3.3.2.9000 tidyverse_1.3.0    kableExtra_1.3.1  
 
 loaded via a namespace (and not attached):
   [1] readxl_1.3.1         backports_1.2.0      plyr_1.8.6          
@@ -66,5 +66,5 @@ loaded via a namespace (and not attached):
 [109] rprojroot_1.3-2      withr_2.3.0          shinystan_2.5.0     
 [112] parallel_4.0.3       hms_0.5.3            grid_4.0.3          
 [115] coda_0.19-4          snakecase_0.11.0     rmarkdown_2.5       
-[118] carData_3.0-4        shiny_1.5.0          lubridate_1.7.9     
-[121] base64enc_0.1-3      dygraphs_1.1.1.6    
+[118] carData_3.0-4        shiny_1.5.0          base64enc_0.1-3     
+[121] dygraphs_1.1.1.6    
